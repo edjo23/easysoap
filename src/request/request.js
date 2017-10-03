@@ -229,8 +229,8 @@
      */
     that.getRequestXml = (callParams, params, opts) => {
 
-        var reqHeadParams   = getRequestHeadParams(_.extend(params, callParams));
-        var reqEnvParams    = getRequestEnvelopeParams(_.extend(params, callParams), opts);
+        var reqHeadParams   = getRequestHeadParams(params);
+        var reqEnvParams    = getRequestEnvelopeParams(_.extend({}, params, callParams), opts);
         var reqParamsString = getRequestParamsAsString(callParams, params, opts);
 
         return Promise.all([reqEnvParams, reqParamsString])
@@ -267,6 +267,11 @@
                 _.each(params.headers, (headerItem) => {
                     headers[headerItem.name] = headerItem.value
                 });
+
+                // SOAPAction header
+                if (callParams.soapAction) {
+                    headers['SOAPAction'] = callParams.soapAction;
+                }
 
                 return new Promise((resolve, reject) => {
                     request({
